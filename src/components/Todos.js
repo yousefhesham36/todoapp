@@ -1,9 +1,11 @@
 import { FlatList } from 'react-native-web'
 import TodoItem from './TodoItem'
 
-const Todos = ({ todos, onDelete }) => {
+const Todos = ({ todos, onDelete, onToggle }) => {
     return (
-        <FlatList style={{ width: "90%", top: 10 }} data={todos} keyExtractor={item => (item.id)} renderItem={({ item }) => <TodoItem todo={item} onDelete={onDelete}></TodoItem>}></FlatList>
+        <FlatList data={todos} style={{ width: "90%", top: 10 }} keyExtractor={(item) => item.id} renderItem={({ item }) => (<TodoItem todo={item} onDelete={onDelete} onToggle={onToggle} />
+        )}
+        />
     )
 }
 
