@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Home = () => {
     const [todos, setTodos] = useState([]);
+    const [filter, setFilter] = useState("all");
     saveTodosTostorage = async (todos) => {
         try {
             await AsyncStorage.setItem("todos", JSON.stringify(todos));
@@ -39,6 +40,21 @@ const Home = () => {
         setTodos(updated);
         saveTodosTostorage(updated)
     }
+
+    const filteredTodos = todos.filter((todo) => {
+        if (filter === "done") return todo.completed;
+        if (filter === "active") return !todo.completed;
+        return true;
+    });
+
+    const handleToggleComplete = (id) => {
+        const updated = todos.map((todo) =>
+            todo.id === id ? { ...todo, completed: !todo.completed } : todo
+        );
+        setTodos(updated);
+        saveTodosToStorage(updated);
+    };
+
     return (
         <View style={styles.container}>
             <Text style={{ fontSize: 35, fontWeight: "bold", marginBottom: 19 }}>
@@ -48,16 +64,18 @@ const Home = () => {
             <TodoForm onsubmit={(todo) => handleAddTodo(todo)} />
             <View style={styles.dividerLine} />
             <View style={styles.filterContainer}>
-                <TouchableOpacity style={styles.filterBtn}>
+                <TouchableOpacity style={styles.filterBtn} onPress={() => setFilter("all")}>
                     <Text style={{ ...styles.filterText, fontWeight: "bold" }}>All</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.filterBtn}>
+                <TouchableOpacity style={styles.filterBtn} onPress={() => setFilter("active")}>
                     <Text style={{ ...styles.filterText, fontWeight: "bold" }}>Active</Text></TouchableOpacity>
-                <TouchableOpacity style={styles.filterBtn}>
+                <TouchableOpacity style={styles.filterBtn} onPress={() => setFilter("done")}>
                     <Text style={{ ...styles.filterText, fontWeight: "bold" }}>Done</Text>
                 </TouchableOpacity>
             </View>
-            {todos.length > 0 && <Todos todos={todos} onDelete={handelDeleteTodo}></Todos>}
+            {filteredTodos.length > 0 && (
+                <Todos todos={filteredTodos} onDelete={handelDeleteTodo} onToggle={handleToggleComplete}
+                />)}
         </View>
     )
 }
